@@ -3,12 +3,23 @@ const webpack = require('webpack');
 const ROOT = process.cwd();  // 根目录
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const postcssConfigPath = './config/postcss.config.js';
-const glob = require('glob');
+const PostcssConfigPath = './config/postcss.config.js';
+const Glob = require('glob');
+const HappyPack = require('happypack');
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
 	entryJs = getEntry('./src/js/**/*.js'),
 	configPlugins = [
+		new HappyPack({
+			id: 'js',
+			threads: 4,
+			loaders: ['babel-loader']
+		}),
+		new HappyPack({
+			id: 'styles',
+			threads: 4,
+			loaders: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader']
+		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'common'
 		}),
@@ -36,38 +47,39 @@ const config = {
 	module: {
 		rules: [
 			{
+				test: /\.js$/,
+				exclude: /(node_modules|bower_components)/,
+				use: {
+					loader: 'happypack/loader?id=js'
+					/*loader: 'babel-loader',
+					options: {
+						presets: ['env']
+					}*/
+				}
+			},
+			{
 				test: /\.(less|css)$/,
 				use: ExtractTextPlugin.extract({
-					fallback: 'style-loader',
+					fallback: 'style-loader?id=styles',
 					use: [{
-							loader: 'css-loader',
+							loader: 'css-loader?id=styles',
 							options: {
 								sourceMap: true
 							}
 						}, 
 						{
-							loader: 'less-loader'
+							loader: 'less-loader?id=styles'
 						}, 
 						{
-							loader: 'postcss-loader',
+							loader: 'postcss-loader?id=styles',
 							options: {
 								config: {
-									path: postcssConfigPath
+									path: PostcssConfigPath
 								}
 							}
 						}
 					]
 				})
-			},
-			{
-				test: /\.js$/,
-				exclude: /(node_modules|bower_components)/,
-				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: ['env']
-					}
-				}
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
@@ -127,7 +139,7 @@ const config = {
  */
 function getEntry (globPath) {
 	let entries = {};
-	glob.sync(globPath).forEach(function (entry) {
+	Glob.sync(globPath).forEach(function (entry) {
 		let basename = path.basename(entry, path.extname(entry)),
 			pathname = path.dirname(entry);
 		// js/lib/*.js 不作为入口
@@ -145,7 +157,7 @@ function getEntry (globPath) {
  */
 function getEntryHtml (globPath) {
 	let entries = [];
-	glob.sync(globPath).forEach(function (entry) {
+	Glob.sync(globPath).forEach(function (entry) {
 		let basename = path.basename(entry, path.extname(entry)),
 			pathname = path.dirname(entry);
 
