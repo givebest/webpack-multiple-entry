@@ -61,5 +61,9 @@ npm run dev
 │       └── foot.html            
 ```
 
+## License
+
+[MIT](./LICENSE) © 2017 [givebest](https://github.com/givebest)
+
 
 
