@@ -1,7 +1,7 @@
 {
-  "name": "webpack-mydemo",
+  "name": "webpack2-multiple-entry",
   "version": "1.0.0",
-  "description": "webpack demo",
+  "description": "webpack2 multiple entry",
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
