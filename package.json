@@ -5,13 +5,16 @@
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p",
+    "build": "better-npm-run build",
     "dev": "better-npm-run dev",
     "start": "better-npm-run start"
   },
   "betterScripts": {
     "dev": {
-      "command": "webpack --config config/webpack.config"
+      "command": "cross-env NODE_ENV=dev webpack --config config/webpack.config"
+    },
+    "build": {
+      "command": "cross-env NODE_ENV=production webpack --config config/webpack.config"
     },
     "start": {
       "command": "webpack-dev-server --config config/webpack.config"
@@ -24,6 +27,7 @@
     "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.5.2",
     "better-npm-run": "^0.0.15",
+    "cross-env": "^5.0.1",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^2.1.2",
     "file-loader": "^0.11.2",

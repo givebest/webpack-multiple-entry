@@ -12,19 +12,22 @@
 npm install
 ```
 
-### 命令
-
-#### 开发
+### 开发
 
 ```
 npm start
 ```
+> http://localhost:8080/view
 
-#### 构建
 
-```
-npm run dev
-```
+### 构建
+
+| 命令 | 说明 |
+|----------|------|
+| `npm run dev` | 开发环境构建，不压缩代码 |
+| `npm run build` | 生产环境构建，压缩代码 |
+
+
 
 
 ## 目录
@@ -35,7 +38,7 @@ npm run dev
 │   ├── webpack.config.js    # webpack 配置文件
 │   └── postcss.config.js    # postcss 配置文件
 ├── src                      # 程序源文件
-│   └── js                   # 路由入口
+│   └── js                   # 入口
 │   ├   └── index.js         # 匹配 view/index.html
 │   ├   └── user         
 │   ├   ├    ├── index.js    # 匹配 view/user/index.html
@@ -63,7 +66,7 @@ npm run dev
 
 ## License
 
-[MIT](./LICENSE) © 2017 [givebest](https://github.com/givebest)
+[ISC](./LICENSE) © 2017 [givebest](https://github.com/givebest)
 
 
 

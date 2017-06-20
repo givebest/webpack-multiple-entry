@@ -1,38 +1,49 @@
 const path = require('path');
 const webpack = require('webpack');
 const ROOT = process.cwd();  // 根目录
+const ENV = process.env.NODE_ENV;
+const IsDev = (ENV === 'dev') ? true : false;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const PostcssConfigPath = './config/postcss.config.js';
 const Glob = require('glob');
 const HappyPack = require('happypack');
+const HappyThreadPool = HappyPack.ThreadPool({ size: (IsDev ? 4 : 10) });
+
+
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
 	entryJs = getEntry('./src/js/**/*.js'),
 	configPlugins = [
 		new HappyPack({
 			id: 'js',
-			threads: 4,
+			// @see https://github.com/amireh/happypack
+			threadPool: HappyThreadPool,
 			loaders: ['babel-loader']
 		}),
 		new HappyPack({
 			id: 'styles',
-			threads: 4,
+			threadPool: HappyThreadPool,
 			loaders: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader']
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: 'common'
 		}),
+		// @see https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points-commons-chunk-css-bundle
 		new ExtractTextPlugin({
 			filename: 'css/[name].css?[contenthash:8]',
 			allChunks: true
-		}),
+		})
 	];
 
 // html
 entryHtml.forEach(function (v) {
 	configPlugins.push(new HtmlWebpackPlugin(v));
 });
+
+// 开发环境不压缩 js
+
+
 
 // 配置
 const config = {
@@ -50,11 +61,10 @@ const config = {
 				test: /\.js$/,
 				exclude: /(node_modules|bower_components)/,
 				use: {
-					loader: 'happypack/loader?id=js'
-					/*loader: 'babel-loader',
+					loader: 'babel-loader?id=js',
 					options: {
 						presets: ['env']
-					}*/
+					}
 				}
 			},
 			{
@@ -64,7 +74,7 @@ const config = {
 					use: [{
 							loader: 'css-loader?id=styles',
 							options: {
-								sourceMap: true
+								minimize:  !IsDev
 							}
 						}, 
 						{
@@ -124,7 +134,7 @@ const config = {
 	// @see http://www.css88.com/doc/webpack2/configuration/dev-server/
 	devServer: {
 		contentBase: [
-			path.join(ROOT, 'dist/')
+			path.join(ROOT, 'src/')
 		],
 		hot: false,
 		host: '0.0.0.0',
@@ -159,12 +169,20 @@ function getEntryHtml (globPath) {
 	let entries = [];
 	Glob.sync(globPath).forEach(function (entry) {
 		let basename = path.basename(entry, path.extname(entry)),
-			pathname = path.dirname(entry);
+			pathname = path.dirname(entry),
+			// @see https://github.com/kangax/html-minifier#options-quick-reference
+			minifyConfig = IsDev ? '' : {
+				removeComments: true,
+				collapseWhitespace: true,
+				minifyCSS: true,
+				minifyJS: true	
+			};
 
 		entries.push({
 			filename: entry.split('/').splice(2).join('/'),
 			template: entry,
-			chunks: ['common', pathname.split('/').splice(3).join('/') + '/' + basename]
+			chunks: ['common', pathname.split('/').splice(3).join('/') + '/' + basename],
+			minify: minifyConfig
 		});
 
 	});
