@@ -42,7 +42,13 @@ entryHtml.forEach(function (v) {
 });
 
 // 开发环境不压缩 js
-
+if (!IsDev) {
+	configPlugins.push(new webpack.optimize.UglifyJsPlugin({
+		compress: {
+			warnings: false
+		}
+	}));
+}
 
 
 // 配置
