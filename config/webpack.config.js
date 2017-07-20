@@ -2,14 +2,16 @@ const path = require('path');
 const webpack = require('webpack');
 const ROOT = process.cwd();  // 根目录
 const ENV = process.env.NODE_ENV;
-const IsDev = (ENV === 'dev') ? true : false;
+const IsProduction = (ENV === 'production') ? true : false;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const PostcssConfigPath = './config/postcss.config.js';
 const Glob = require('glob');
 const HappyPack = require('happypack');
-const HappyThreadPool = HappyPack.ThreadPool({ size: (IsDev ? 4 : 10) });
-
+const HappyThreadPool = HappyPack.ThreadPool({ size: (IsProduction ? 10 : 4) });
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const staticUrl = '//cdn.com';
+const publicPath = IsProduction ? staticUrl : '/';
 
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
@@ -33,7 +35,15 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 		new ExtractTextPlugin({
 			filename: 'css/[name].css?[contenthash:8]',
 			allChunks: true
-		})
+		}),
+		// 手动 copy 一些文件
+		// @see https://github.com/kevlened/copy-webpack-plugin
+		new CopyWebpackPlugin([
+			{
+				from:  'src/js/lib/queries.min.js',
+				to: 'js/lib/queries.min.js'
+			}
+		]),
 	];
 
 // html
@@ -42,7 +52,7 @@ entryHtml.forEach(function (v) {
 });
 
 // 开发环境不压缩 js
-if (!IsDev) {
+if (IsProduction) {
 	configPlugins.push(new webpack.optimize.UglifyJsPlugin({
 		compress: {
 			warnings: false
@@ -59,7 +69,7 @@ const config = {
 		filename: 'js/[name].js?[chunkhash:8]',
 		chunkFilename: 'js/[name].js?[chunkhash:8]',
 		path: path.resolve(ROOT, 'dist'),
-		publicPath: '/'
+		publicPath: publicPath
 	},   
 	module: {
 		rules: [
@@ -80,7 +90,7 @@ const config = {
 					use: [{
 							loader: 'css-loader?id=styles',
 							options: {
-								minimize:  !IsDev
+								minimize:  IsProduction
 							}
 						}, 
 						{
@@ -104,8 +114,8 @@ const config = {
 						loader: 'url-loader',
 						options: {
 							limit: 100,
-							publicPath: '',
-							name: '/img/[name].[ext]?[hash:8]'
+							publicPath: publicPath,
+							name: 'img/[name].[ext]?[hash:8]'
 						}
 					}
 				]
@@ -117,8 +127,8 @@ const config = {
 						loader: 'url-loader',
 						options: {
 							limit: 100,
-							publicPath: '',
-							name: '/font/[name].[ext]?[hash:8]'
+							publicPath: publicPath,
+							name: 'font/[name].[ext]?[hash:8]'
 						}
 					}
 				]
@@ -142,7 +152,7 @@ const config = {
 		contentBase: [
 			path.join(ROOT, 'src/')
 		],
-		disableHostCheck: true,
+		disableHostCheck: true,  // https://stackoverflow.com/questions/43650550/invalid-host-header-in-when-running-react-app
 		hot: false,
 		host: '0.0.0.0',
 		port: 8080
@@ -160,7 +170,7 @@ function getEntry (globPath) {
 		let basename = path.basename(entry, path.extname(entry)),
 			pathname = path.dirname(entry);
 		// js/lib/*.js 不作为入口
-		if (!entry.match(/\/js\/lib\//)) {
+		if (!entry.match(/\/js\/(lib|commons)\//)) {
 			entries[pathname.split('/').splice(3).join('/') + '/' + basename] = pathname + '/' + basename;
 		}
 	});
@@ -178,7 +188,7 @@ function getEntryHtml (globPath) {
 		let basename = path.basename(entry, path.extname(entry)),
 			pathname = path.dirname(entry),
 			// @see https://github.com/kangax/html-minifier#options-quick-reference
-			minifyConfig = IsDev ? '' : {
+			minifyConfig = !IsProduction ? '' : {
 				removeComments: true,
 				collapseWhitespace: true,
 				minifyCSS: true,

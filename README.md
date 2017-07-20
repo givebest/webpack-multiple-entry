@@ -45,6 +45,8 @@ npm start
 │   ├   ├    ├── list.js     # 匹配 view/user/list.html
 │   ├   └── lib              # JS 库等，不参与路由匹配
 │   ├       ├── jquery.js 
+│   ├   └── commons          # JS 公共模块等，不参与路由匹配
+│   ├       ├── app-callphone.js 
 │   └── view                 
 │   ├    └── index.html       # 对应 js/index.js
 │   ├    └── user         
