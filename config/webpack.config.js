@@ -12,6 +12,7 @@ const HappyThreadPool = HappyPack.ThreadPool({ size: (IsProduction ? 10 : 4) });
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const staticUrl = '//cdn.com';
 const publicPath = IsProduction ? staticUrl : '/';
+const extraPath = IsProduction ? '/' : '';
 
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
@@ -70,7 +71,7 @@ const config = {
 		chunkFilename: 'js/[name].js?[chunkhash:8]',
 		path: path.resolve(ROOT, 'dist'),
 		publicPath: publicPath
-	},   
+	},
 	module: {
 		rules: [
 			{
@@ -92,10 +93,10 @@ const config = {
 							options: {
 								minimize:  IsProduction
 							}
-						}, 
+						},
 						{
 							loader: 'less-loader?id=styles'
-						}, 
+						},
 						{
 							loader: 'postcss-loader?id=styles',
 							options: {
@@ -114,7 +115,7 @@ const config = {
 						loader: 'url-loader',
 						options: {
 							limit: 100,
-							publicPath: publicPath,
+							publicPath: publicPath +extraPath,
 							name: 'img/[name].[ext]?[hash:8]'
 						}
 					}
@@ -127,7 +128,7 @@ const config = {
 						loader: 'url-loader',
 						options: {
 							limit: 100,
-							publicPath: publicPath,
+							publicPath: publicPath + extraPath,
 							name: 'font/[name].[ext]?[hash:8]'
 						}
 					}
@@ -142,7 +143,7 @@ const config = {
 	},
 	resolve: {
 		alias: {
-			views:  path.resolve(ROOT, './src/view')	
+			views:  path.resolve(ROOT, './src/view')
 		}
 	},
 	plugins: configPlugins,
@@ -155,7 +156,15 @@ const config = {
 		disableHostCheck: true,  // https://stackoverflow.com/questions/43650550/invalid-host-header-in-when-running-react-app
 		hot: false,
 		host: '0.0.0.0',
-		port: 8080
+		port: 8080,
+		/*proxy: {
+		  "/m/public": {
+		  	target: "http://localhost:8080",
+		  	pathRewrite: {
+		  		"^/m/public" : ""
+		  	}
+		  }
+		}*/
 	}
 };
 
@@ -192,7 +201,7 @@ function getEntryHtml (globPath) {
 				removeComments: true,
 				collapseWhitespace: true,
 				minifyCSS: true,
-				minifyJS: true	
+				minifyJS: true
 			};
 
 		entries.push({
