@@ -109,7 +109,7 @@ const config = {
 				})
 			},
 			{
-				test: /\.(png|jpg|gif)$/,
+				test: /\.(png|jpe?g|gif|svg)$/,
 				use: [
 					{
 						loader: 'url-loader',
@@ -118,7 +118,20 @@ const config = {
 							publicPath: publicPath +extraPath,
 							name: 'img/[name].[ext]?[hash:8]'
 						}
-					}
+					},
+          // @see https://github.com/tcoopman/image-webpack-loader
+          {
+            loader: 'image-webpack-loader',
+            query: {
+              mozjpeg: {
+                quality: 65
+              },
+              pngquant: {
+                quality: '65-90',
+                speed: 4
+              }
+            }
+          }
 				]
 			},
 			{
