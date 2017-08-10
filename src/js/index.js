@@ -15,7 +15,7 @@ function init () {
 
   url.setUrl();
 
-  const render = require('../view/index.html');
+  /*const render = require('../view/index.html');
   const data = {
     tit: 'tits'
   };
@@ -25,7 +25,7 @@ function init () {
 
   if (typeof document === 'object') {
     document.body.innerHTML = html;
-  }
+  }*/
 
   console.log('page home', Dialog);
   events();
