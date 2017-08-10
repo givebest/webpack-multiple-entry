@@ -1,0 +1,12 @@
+<script type="text/javascript">
+	/*百度统计*/
+  setTimeout(function () {
+    var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?29e38aeb85ae0cb9372690971fb4f5d6";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+    })();
+  }, 1000);
+</script>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <!-- 部分国产浏览器默认采用高速模式渲染页面 -->
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <!-- google -->
+  <meta name="format-detection" content="telephone=no">
+  <title>{{block 'title'}}H5模板{{/block}}</title>
+  <meta name="description" content="{{block 'description'}}描述{{/block}}">
+  <!-- Yahoo -->
+  <link rel="shortcut icon" href="https://s.yimg.com/rz/l/favicon.ico">
+  <link rel="apple-touch-icon" href="//s.yimg.com/rz/l/favicon.png">
+  <script src="/js/lib/queries.min.js?v=20170720"></script>
+  <% block('head', function(){ %><% }) %>
+</head>
+<body>
+  {{block 'content'}}{{/block}}
+</body>
+{{include './statistics.art'}}
+</html>

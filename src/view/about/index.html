@@ -1,14 +1,18 @@
-#include('../../template/head.html')
-	<title>About us</title>
-	<meta name="description" content="">
-</head>
-    <body>
-        
-        <h1>About us</h1>
+<!-- Layout 母模板 -->
+<% extend('../../template/layout.art') %>
 
-        #include('../../template/nav.html')
-        
-    </body>
-    #include('../../template/statistics.html')
-</html>
-	
+
+<!-- 标题 -->
+<% block('title', function(){ %>About us<% }) %>
+
+<!-- body -->
+<% block('content', function(){ %>
+  <% include('../../template/nav.art') %>
+
+  <h1>About us</h1>
+
+  <h2>Dialog组件</h2>
+  <a id="btnDialog" href="javascript:;">试一下</a>
+
+<% }) %>
+

@@ -1,27 +1,42 @@
-#include('../template/head.html')
-	<title>Home</title>
-	<meta name="description" content="">
-</head>
-    <body>
+<!-- Layout 母模板 -->
+<% extend('../template/layout.art') %>
 
 
-        <h1>Home</h1>
-        <h2>page</h2>
+<!-- 标题 -->
+<% block('title', function(){ %>Home<% }) %>
 
-        #include('../template/nav.html')
+<!-- 描述 -->
+<% block('description', function(){ %>这是一个首页<% }) %>
 
-        <p>
-            <img src="../img/logo-yahoo.png" alt="yahoo">
-        </p>
+<!-- CSS & JS -->
+<% block('head', function(){ %>
+<link href="/css/common.css?v=2017" rel="stylesheet">
+<% }) %>
 
-       <i class="iconfont icon-weixin"></i>
+<!-- body -->
+<% block('content', function(){ %>
+  <% include('../template/nav.art') %>
+  <h1>Home</h1>
 
-       <p>
-         <img src="../img/flickr.jpg" alt="flickr">
-       </p>
 
-		#include('../template/script.html')
-    </body>
-    #include('../template/statistics.html')
-</html>
+
+  <h2>图片引入</h2>
+  <p>
+    <img src="../img/logo-yahoo.png" alt="yahoo">
+  </p>
+  <p>
+    <img src="/img/flickr.jpg" alt="flickr">
+  </p>
+
+  <h2>Iconfont 引入</h2>
+  <i class="iconfont icon-weixin"></i>
+
+
+  <h2>Dialog组件</h2>
+  <a id="btnDialog" href="javascript:;">试一下</a>
+   <ol>
+     <li>{{tit}}</li>
+   </ol>
+
+<% }) %>
 

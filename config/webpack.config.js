@@ -75,7 +75,7 @@ const config = {
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.js$/i,
 				exclude: /(node_modules|bower_components)/,
 				use: {
 					loader: 'babel-loader?id=js',
@@ -85,7 +85,7 @@ const config = {
 				}
 			},
 			{
-				test: /\.(less|css)$/,
+				test: /\.(less|css)$/i,
 				use: ExtractTextPlugin.extract({
 					fallback: 'style-loader?id=styles',
 					use: [{
@@ -109,7 +109,7 @@ const config = {
 				})
 			},
 			{
-				test: /\.(png|jpe?g|gif|svg)$/,
+				test: /\.(png|jpe?g|gif|svg)$/i,
 				use: [
 					{
 						loader: 'url-loader',
@@ -135,7 +135,7 @@ const config = {
 				]
 			},
 			{
-				test: /\.(eot|svg|ttf|woff)$/,
+				test: /\.(eot|svg|ttf|woff)$/i,
 				use: [
 					{
 						loader: 'url-loader',
@@ -147,11 +147,17 @@ const config = {
 					}
 				]
 			},
+      // @see http://aui.github.io/art-template/webpack/index.html#Options
+      {
+        test: /\.(htm|html|art)$/i,
+        loader: 'art-template-loader',
+        options: {}
+      },
 			// @see https://github.com/wzsxyz/html-withimg-loader
-			{
+			/*{
 				test: /\.(htm|html)$/i,
 				loader: 'html-withimg-loader?min=false'
-			}
+			}*/
 		]
 	},
 	resolve: {
