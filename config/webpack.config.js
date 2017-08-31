@@ -115,8 +115,11 @@ const config = {
 						loader: 'url-loader',
 						options: {
 							limit: 100,
-							publicPath: publicPath +extraPath,
-							name: 'img/[name].[ext]?[hash:8]'
+							publicPath: publicPath + extraPath,
+              outputPath: function (path) {
+                return path.replace('src/img', 'img');
+              },
+							name: '[path][name].[ext]?[hash:8]'
 						}
 					},
           // @see https://github.com/tcoopman/image-webpack-loader
@@ -218,7 +221,7 @@ function getEntryHtml (globPath) {
 			// @see https://github.com/kangax/html-minifier#options-quick-reference
 			minifyConfig = !IsProduction ? '' : {
 				removeComments: true,
-				collapseWhitespace: true,
+				// collapseWhitespace: true,
 				minifyCSS: true,
 				minifyJS: true
 			};

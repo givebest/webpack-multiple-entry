@@ -6,6 +6,8 @@ import url from "./commons/url";
 
 import Dialog from '../compenent/dialog/GB-dialog';
 
+import Toast from '../compenent/toast/GB-message';
+
 
 
 init();
@@ -37,6 +39,10 @@ function events () {
       title: '标题',
       content: '这里是弹出层内容'
     });
+  }, false);
+
+  document.getElementById('btnToast').addEventListener('click', function () {
+    Toast.show('Toast');
   }, false);
 }
 
