@@ -18,6 +18,12 @@ const extraPath = IsProduction ? '/' : '';
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
 	entryJs = getEntry('./src/js/**/*.js'),
 	configPlugins = [
+		// @see https://doc.webpack-china.org/plugins/provide-plugin/
+		// jQuery 设为自动加载，不必 import 或 require
+		new webpack.ProvidePlugin({
+			$: 'jquery',
+			jQuery: 'jquery'
+		}),
 		new HappyPack({
 			id: 'js',
 			// @see https://github.com/amireh/happypack
@@ -30,7 +36,8 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 			loaders: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader']
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: 'common'
+			name: 'common',
+			minChunks: 3 // 包含 3 次即打包到 commons chunk @see https://doc.webpack-china.org/plugins/commons-chunk-plugin/
 		}),
 		// @see https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points-commons-chunk-css-bundle
 		new ExtractTextPlugin({
@@ -61,7 +68,6 @@ if (IsProduction) {
 	}));
 }
 
-
 // 配置
 const config = {
 	entry: entryJs,
@@ -73,6 +79,12 @@ const config = {
 		publicPath: publicPath
 	},
 	module: {
+		// @see https://doc.webpack-china.org/configuration/module/#module-noparse
+		// 排除不需要 webpack 解析的文件，提高速度
+		/* noParse: function (content) {
+			return /jquery|zepto/.test(content);
+		}, */
+		noParse: /jquery|lodash|zepto/,
 		rules: [
 			{
 				test: /\.js$/i,

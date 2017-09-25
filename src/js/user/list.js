@@ -2,4 +2,4 @@ require('../../css/base.css');
 require('../../css/common.less');
 
 
-console.log('user list');
+console.log('user list', $);

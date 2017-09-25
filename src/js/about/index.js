@@ -2,6 +2,8 @@ require('../../css/base.css');
 require('../../css/common.less');
 require('./index.less');
 
+// require('../lib/zepto.js');
+
 console.log('About us');
 
 import Dialog from '../../compenent/dialog/GB-dialog';

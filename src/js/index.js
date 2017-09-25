@@ -41,9 +41,12 @@ function events () {
     });
   }, false);
 
-  document.getElementById('btnToast').addEventListener('click', function () {
+  /* document.getElementById('btnToast').addEventListener('click', function () {
     Toast.show('Toast');
-  }, false);
+  }, false); */
+  $('#btnToast').on('click', function () {
+    Toast.show('Toast');
+  });
 }
 
 
