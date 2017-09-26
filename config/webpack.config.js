@@ -13,6 +13,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const staticUrl = '//cdn.com';
 const publicPath = IsProduction ? staticUrl : '/';
 const extraPath = IsProduction ? '/' : '';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
@@ -20,10 +21,11 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 	configPlugins = [
 		// @see https://doc.webpack-china.org/plugins/provide-plugin/
 		// jQuery 设为自动加载，不必 import 或 require
-		new webpack.ProvidePlugin({
+		/* new webpack.ProvidePlugin({
 			$: 'jquery',
 			jQuery: 'jquery'
-		}),
+		}), */
+		new webpack.optimize.ModuleConcatenationPlugin(),
 		new HappyPack({
 			id: 'js',
 			// @see https://github.com/amireh/happypack
@@ -50,6 +52,10 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 			{
 				from:  'src/js/lib/queries.min.js',
 				to: 'js/lib/queries.min.js'
+			},
+			{
+				from: 'src/js/lib/zepto.min.js',
+				to: 'js/lib/zepto.min.js'
 			}
 		]),
 	];
@@ -63,8 +69,15 @@ entryHtml.forEach(function (v) {
 if (IsProduction) {
 	configPlugins.push(new webpack.optimize.UglifyJsPlugin({
 		compress: {
-			warnings: false
+			warnings: false,
+			drop_console: true,
+			pure_funcs: ['console.log']
 		}
+	}));
+} else {
+	// @see https://github.com/th0r/webpack-bundle-analyzer
+	configPlugins.push(new BundleAnalyzerPlugin({
+		openAnalyzer: false
 	}));
 }
 
@@ -177,10 +190,17 @@ const config = {
 	},
 	resolve: {
 		alias: {
-			views:  path.resolve(ROOT, './src/view')
+			views:  path.resolve(ROOT, './src/view'),
 		}
 	},
 	plugins: configPlugins,
+	/**
+	 * @see https://doc.webpack-china.org/configuration/externals/
+	 * CDN 引入 jQuery，jQuery 不打包到 bundle 中
+	 */
+	externals: {
+		jquery: 'jQuery'
+	},
 	// @see http://webpack.github.io/docs/webpack-dev-server.html
 	// @see http://www.css88.com/doc/webpack2/configuration/dev-server/
 	devServer: {
