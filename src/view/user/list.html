@@ -8,5 +8,15 @@
 <!-- body -->
 <% block('content', function(){ %>
   <% include('../../template/nav.art') %>
-  <h1>User list</h1>
+  <div id="wrapper"></div>
+
+  <script id="user-list" type="text/html">
+  <h1><?= title ?></h1>
+
+  <ul>
+  <? for (var i =0; i < list.length; i++) { ?>
+  <li><?= list[i] ?></li>
+  <? } ?>
+  </ul>
+  </script>
 <% }) %>

@@ -1,8 +1,8 @@
-# Webpack2 multiple entry
+# Webpack multiple entry
 
-基于 webpack2 实现的多入口项目脚手架。
+基于 webpack 实现的多入口项目脚手架。
 
-主要使用 `extract-text-webpack-plugin` 实现 `js` 、`css` 公共代码提取，`html-webpack-plugin` 实现 `html` 多入口，`less-loader` 实现 `less` 编译，`postcss-loader` 配置 `autoprefixer` 实现自动添加浏览器兼容前缀，删除~~`html-withimg-loader` 实现 `html` 内引入图片版本号添加和模板功能，~~`art-template`实现`html`模板功能，具有 layout 母模板(布局模板)功能更加强大，babel-loader` 实现 `ES6` 转码功能，`imagemin` 实现图片优化压缩， `happypack` 多线程加速构建速度。
+主要使用 `extract-text-webpack-plugin` 实现 `js` 、`css` 公共代码提取，`html-webpack-plugin` 实现 `html` 多入口，`less-loader` 实现 `less` 编译，`postcss-loader` 配置 `autoprefixer` 实现自动添加浏览器兼容前缀，删除~~`html-withimg-loader` 实现 `html` 内引入图片版本号添加和模板功能，~~`art-template`实现`html`模板功能，具有 layout 母模板(布局模板)功能更加强大、同时通过修改解析规则界定符支持浏览器端使用 `art-template-web.js`，babel-loader` 实现 `ES6` 转码功能，`imagemin` 实现图片优化压缩， `happypack` 多线程加速构建速度。
 
 ## 使用
 
@@ -28,7 +28,54 @@ npm start
 | `npm run build` | 生产环境构建，压缩代码  |
 
 
+### art-template
 
+> 项目同时用了 `art-template-loader` 和 `art-template-web.js`，默认情况下模板解析规则界定符会冲突，通过修改 `art-template-web.js` 解析界定符避免冲突。
+
+```javascript
+// 修改 <% %> 为 <? ?>
+// @see http://aui.github.io/art-template/zh-cn/docs/rules.html
+var rule = template.defaults.rules[0];
+rule.test = new RegExp(rule.test.source.replace('<%', '<\\\?').replace('%>', '\\\?>'));
+```
+
+#### 使用
+
+> 与[原始语法](http://aui.github.io/art-template/zh-cn/docs/syntax.html)保持一致，仅需替换 `<%` 为 `<?` 、`%>` 为 `?>`
+
+##### JavaScript
+```javascript
+import template from '../commons/template';
+
+var data = {
+  title: '用户列表',
+  list: [
+    '001',
+    '002',
+    '003',
+    '004',
+    '005'
+  ]
+};
+
+var html = template('user-list', data);
+document.getElementById('wrapper').innerHTML = html;
+```
+
+##### HTML
+```html
+<div id="wrapper"></div>
+
+<script id="user-list" type="text/html">
+<h1><?= title ?></h1>
+
+<ul>
+<? for (var i =0; i < list.length; i++) { ?>
+<li><?= list[i] ?></li>
+<? } ?>
+</ul>
+</script>
+```
 
 ## 目录
 
