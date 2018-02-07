@@ -1,5 +1,14 @@
 require('../../css/base.css');
 require('../../css/common.less');
 
+// import $ from 'jquery';
 
-console.log('user home');
+/* import('jquery').then($ => {
+  console.log($);
+}); */
+
+/* import('lodash').then(_ => {
+  // Do something with lodash (a.k.a '_')...
+}) */
+
+console.log('user home',$);

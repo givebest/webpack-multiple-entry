@@ -8,7 +8,8 @@ import Dialog from '../compenent/dialog/GB-dialog';
 
 import Toast from '../compenent/toast/GB-message';
 
-
+// import $ from 'jquery';
+// import $ from './lib/zepto';
 
 init();
 
@@ -41,9 +42,12 @@ function events () {
     });
   }, false);
 
-  document.getElementById('btnToast').addEventListener('click', function () {
+  /* document.getElementById('btnToast').addEventListener('click', function () {
     Toast.show('Toast');
-  }, false);
+  }, false); */
+  $('#btnToast').on('click', function () {
+    Toast.show('Toast');
+  });
 }
 
 

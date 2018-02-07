@@ -13,11 +13,19 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const staticUrl = '//cdn.com';
 const publicPath = IsProduction ? staticUrl : '/';
 const extraPath = IsProduction ? '/' : '';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
 	entryJs = getEntry('./src/js/**/*.js'),
 	configPlugins = [
+		// @see https://doc.webpack-china.org/plugins/provide-plugin/
+		// jQuery 设为自动加载，不必 import 或 require
+		/* new webpack.ProvidePlugin({
+			$: 'jquery',
+			jQuery: 'jquery'
+		}), */
+		new webpack.optimize.ModuleConcatenationPlugin(),
 		new HappyPack({
 			id: 'js',
 			// @see https://github.com/amireh/happypack
@@ -30,7 +38,8 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 			loaders: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader']
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: 'common'
+			name: 'common',
+			minChunks: 3 // 包含 3 次即打包到 commons chunk @see https://doc.webpack-china.org/plugins/commons-chunk-plugin/
 		}),
 		// @see https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points-commons-chunk-css-bundle
 		new ExtractTextPlugin({
@@ -43,6 +52,10 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 			{
 				from:  'src/js/lib/queries.min.js',
 				to: 'js/lib/queries.min.js'
+			},
+			{
+				from: 'src/js/lib/zepto.min.js',
+				to: 'js/lib/zepto.min.js'
 			}
 		]),
 	];
@@ -56,11 +69,17 @@ entryHtml.forEach(function (v) {
 if (IsProduction) {
 	configPlugins.push(new webpack.optimize.UglifyJsPlugin({
 		compress: {
-			warnings: false
+			warnings: false,
+			drop_console: true,
+			pure_funcs: ['console.log']
 		}
 	}));
+} else {
+	// @see https://github.com/th0r/webpack-bundle-analyzer
+	configPlugins.push(new BundleAnalyzerPlugin({
+		openAnalyzer: false
+	}));
 }
-
 
 // 配置
 const config = {
@@ -73,6 +92,12 @@ const config = {
 		publicPath: publicPath
 	},
 	module: {
+		// @see https://doc.webpack-china.org/configuration/module/#module-noparse
+		// 排除不需要 webpack 解析的文件，提高速度
+		/* noParse: function (content) {
+			return /jquery|zepto/.test(content);
+		}, */
+		noParse: /jquery|lodash|zepto/,
 		rules: [
 			{
 				test: /\.js$/i,
@@ -165,10 +190,17 @@ const config = {
 	},
 	resolve: {
 		alias: {
-			views:  path.resolve(ROOT, './src/view')
+			views:  path.resolve(ROOT, './src/view'),
 		}
 	},
 	plugins: configPlugins,
+	/**
+	 * @see https://doc.webpack-china.org/configuration/externals/
+	 * CDN 引入 jQuery，jQuery 不打包到 bundle 中
+	 */
+	externals: {
+		jquery: 'jQuery'
+	},
 	// @see http://webpack.github.io/docs/webpack-dev-server.html
 	// @see http://www.css88.com/doc/webpack2/configuration/dev-server/
 	devServer: {

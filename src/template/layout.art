@@ -18,6 +18,8 @@
 </head>
 <body>
   {{block 'content'}}{{/block}}
+  <!-- <script src="/js/lib/jquery.min.js?v=3.2.1"></script> -->
+  <script src="/js/lib/zepto.min.js?v=2017"></script>
 </body>
 {{include './statistics.art'}}
 </html>

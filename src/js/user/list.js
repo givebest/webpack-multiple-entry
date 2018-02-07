@@ -1,7 +1,6 @@
 require('../../css/base.css');
 require('../../css/common.less');
 
-
 import template from '../commons/template';
 
 var data = {
@@ -11,12 +10,11 @@ var data = {
     '002',
     '003',
     '004',
-    '005',
-    '006'
+    '005'
   ]
 };
 
 var html = template('user-list', data);
-document.getElementById('wrapper').innerHTML = html;
+$('#wrapper').html(html);
 
-console.log('user list');
+console.log('user list', $);
