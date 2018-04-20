@@ -231,12 +231,10 @@ function getEntry (globPath) {
 	let entries = {};
 	Glob.sync(globPath).forEach(function (entry) {
 		let basename = path.basename(entry, path.extname(entry)),
-			pathname = path.dirname(entry),
-      fileDir = pathname.split('/').splice(3).join('/');
-
+			pathname = path.dirname(entry);
 		// js/lib/*.js 不作为入口
 		if (!entry.match(/\/js\/(lib|commons)\//)) {
-			entries[(fileDir ? fileDir + '/' : fileDir) + basename] = pathname + '/' + basename;
+			entries[pathname.split('/').splice(3).join('/') + '/' + basename] = pathname + '/' + basename;
 		}
 	});
 	return entries;
@@ -252,7 +250,6 @@ function getEntryHtml (globPath) {
 	Glob.sync(globPath).forEach(function (entry) {
 		let basename = path.basename(entry, path.extname(entry)),
 			pathname = path.dirname(entry),
-      fileDir = pathname.split('/').splice(3).join('/'),
 			// @see https://github.com/kangax/html-minifier#options-quick-reference
 			minifyConfig = !IsProduction ? '' : {
 				removeComments: true,
@@ -264,7 +261,7 @@ function getEntryHtml (globPath) {
 		entries.push({
 			filename: entry.split('/').splice(2).join('/'),
 			template: entry,
-			chunks: ['common', (fileDir ? fileDir + '/' : fileDir) + basename],
+			chunks: ['common', pathname.split('/').splice(3).join('/') + '/' + basename],
 			minify: minifyConfig
 		});
 
