@@ -13,7 +13,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const staticUrl = '//cdn.com';
 const publicPath = IsProduction ? staticUrl : '/';
 const extraPath = IsProduction ? '/' : '';
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+let runtime = require('art-template/lib/runtime');
+
+// @see http://aui.github.io/art-template/webpack/index.html#Filter
+// 模板变量
+runtime.Date = () => {
+	return global.Date
+}
 
 
 let entryHtml = getEntryHtml('./src/view/**/*.html'),
@@ -179,7 +186,9 @@ const config = {
       {
         test: /\.(htm|html|art)$/i,
         loader: 'art-template-loader',
-        options: {}
+        options: {
+        	imports: require.resolve('art-template/lib/runtime')
+        }
       },
 			// @see https://github.com/wzsxyz/html-withimg-loader
 			/*{
