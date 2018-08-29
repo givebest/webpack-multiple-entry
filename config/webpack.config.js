@@ -220,14 +220,18 @@ const config = {
 		hot: false,
 		host: '0.0.0.0',
 		port: 8080,
-		/*proxy: {
-		  "/m/public": {
-		  	target: "http://localhost:8080",
-		  	pathRewrite: {
-		  		"^/m/public" : ""
-		  	}
-		  }
-		}*/
+		/**
+	     * http://localhost:8080/api/get => http://httpbin.org/get
+	     */
+	    proxy: {
+	      '/api': {
+	        target: 'http://httpbin.org',
+	        changeOrigin: true,
+	        pathRewrite: {
+	          '^/api': ''
+	        }
+	      }
+	    }
 	}
 };
 
