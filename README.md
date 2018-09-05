@@ -117,6 +117,19 @@ document.getElementById('wrapper').innerHTML = html;
 │       └── foot.art            
 ```
 
+## 常见问题
+
+####  MacOS png 图片处理失败
+
+现象：    
+```
+Module build failed: Error: dyld: Library not loaded: /usr/local/opt/libpng/lib/libpng16.16.dylib
+```
+
+解决：     
+`brew install libpng`，详见：https://github.com/tcoopman/image-webpack-loader#libpng-issues
+
+
 ## License
 
 [ISC](./LICENSE) © 2017 [givebest](https://github.com/givebest)
