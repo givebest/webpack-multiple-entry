@@ -4,9 +4,9 @@ require('../css/iconfont.css');
 
 import url from "./commons/url";
 
-import Dialog from '../compenent/dialog/GB-dialog';
+import Dialog from '../component/dialog/GB-dialog';
 
-import Toast from '../compenent/toast/GB-message';
+import Toast from '../component/toast/GB-message';
 
 // import $ from 'jquery';
 // import $ from './lib/zepto';

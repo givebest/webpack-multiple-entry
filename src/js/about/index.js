@@ -6,7 +6,7 @@ require('./index.less');
 
 console.log('About us');
 
-import Dialog from '../../compenent/dialog/GB-dialog';
+import Dialog from '../../component/dialog/GB-dialog';
 
 document.getElementById('btnDialog').addEventListener('click', function () {
     Dialog.show({
