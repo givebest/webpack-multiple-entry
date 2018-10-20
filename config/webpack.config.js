@@ -88,6 +88,34 @@ if (IsProduction) {
 	}));
 }
 
+// 开发环境不压缩图片，提升热更新效率
+let imageMin = [{
+  loader: 'url-loader',
+  options: {
+    limit: 100,
+    publicPath: publicPath + extraPath,
+    outputPath: function (path) {
+      return path.replace('src/img', 'img');
+    },
+    name: '[path][name].[ext]?[hash:8]'
+  }
+}]
+if (IsProduction) {
+  imageMin.push({
+    // @see https://github.com/tcoopman/image-webpack-loader
+    loader: 'image-webpack-loader',
+    query: {
+      mozjpeg: {
+        quality: 65
+      },
+      pngquant: {
+        quality: '65-90',
+        speed: 4
+      }
+    }
+  })
+}
+
 // 配置
 const config = {
 	entry: entryJs,
@@ -142,32 +170,7 @@ const config = {
 			},
 			{
 				test: /\.(png|jpe?g|gif|svg)$/i,
-				use: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 100,
-							publicPath: publicPath + extraPath,
-              outputPath: function (path) {
-                return path.replace('src/img', 'img');
-              },
-							name: '[path][name].[ext]?[hash:8]'
-						}
-					},
-          // @see https://github.com/tcoopman/image-webpack-loader
-          {
-            loader: 'image-webpack-loader',
-            query: {
-              mozjpeg: {
-                quality: 65
-              },
-              pngquant: {
-                quality: '65-90',
-                speed: 4
-              }
-            }
-          }
-				]
+				use: imageMin
 			},
 			{
 				test: /\.(eot|svg|ttf|woff)$/i,
