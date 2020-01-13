@@ -42,14 +42,14 @@
     "happypack": "^4.0.1",
     "html-webpack-plugin": "^2.30.1",
     "image-webpack-loader": "^3.3.1",
-    "jquery": "^1.12.4",
+    "jquery": ">=3.4.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
     "postcss-loader": "^2.0.5",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
     "webpack": "^3.12.0",
-    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-bundle-analyzer": ">=3.32",
     "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
