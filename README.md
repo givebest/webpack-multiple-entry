@@ -132,7 +132,7 @@ Module build failed: Error: dyld: Library not loaded: /usr/local/opt/libpng/lib/
 
 ## License
 
-[ISC](./LICENSE) © 2017 [givebest](https://github.com/givebest)
+[ISC](./LICENSE) © 2020 [givebest](https://github.com/givebest)
 
 
 

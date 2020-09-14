@@ -207,6 +207,7 @@ const config = {
 	resolve: {
 		alias: {
 			views:  path.resolve(ROOT, './src/view'),
+			'@': path.resolve(ROOT, 'src')
 		}
 	},
 	plugins: configPlugins,

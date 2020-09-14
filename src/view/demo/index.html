@@ -1,0 +1,56 @@
+<!-- Layout 母模板 -->
+<% extend('../../template/layout.art') %>
+
+
+<!-- 标题 -->
+<% block('title', function(){ %>About us<% }) %>
+
+<!-- 描述 -->
+<% block('description', function(){ %>这个是页面描述<% }) %>
+
+<!-- body -->
+<% block('content', function(){ %>
+  <% include('../../template/nav.art') %>
+
+  <h1>Demo</h1>
+
+  <h2>模板变量1</h2>
+  <p>
+    Date.now(): <%= Date.now() %>
+  </p>
+
+  <h2>图片引入</h2>
+  <p>
+    <img src="../../img/logo-yahoo.png" alt="yahoo">
+  </p>
+  <p>
+    <img src="../../img/flickr/flickr.jpg" alt="flickr">
+  </p>
+
+  <h2>Iconfont 引入</h2>
+  <i class="iconfont icon-weixin"></i>
+
+
+  <h2>Dialog组件</h2>
+  <a id="btnDialog" href="javascript:;">试一下</a>
+
+   <h2>Toast组件</h2>
+  <a id="btnToast" href="javascript:;">试一下</a>
+
+  <h2>模板</h2>
+  <div id="wrapper">
+    0
+  </div>
+
+  <script id="user-list" type="text/html">
+    <h1><?= title ?></h1>
+
+    <ol>
+      <? for (var i =0; i < list.length; i++) { ?>
+      <li><?= list[i] ?></li>
+      <? } ?>
+      </ol>
+  </script>
+
+<% }) %>
+
