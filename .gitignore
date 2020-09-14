@@ -1,6 +1,7 @@
-/node_modules
+node_modules
 /assets
 /dist
 /.sass-cache
 ./npm-debug.log
 .DS_Store
+temp

@@ -14,10 +14,11 @@
   <link rel="shortcut icon" href="https://s.yimg.com/rz/l/favicon.ico">
   <link rel="apple-touch-icon" href="//s.yimg.com/rz/l/favicon.png">
   <script src="/js/lib/queries.min.js?v=20170720"></script>
+  {{include './head.art'}}
   <% block('head', function(){ %><% }) %>
 </head>
 <body>
-  <h2>模板变量</h2>
+  <h2>模板变量1</h2>
   <p>
     Date.now(): <%= Date.now() %>
   </p>
