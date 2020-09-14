@@ -63,6 +63,10 @@ let entryHtml = getEntryHtml('./src/view/**/*.html'),
 			{
 				from: 'src/js/lib/zepto.min.js',
 				to: 'js/lib/zepto.min.js'
+			},
+			{
+				from: 'src/bootstrap/dist/',
+				to: 'bootstrap/dist/'
 			}
 		]),
 	];
