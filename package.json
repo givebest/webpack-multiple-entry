@@ -48,9 +48,9 @@
     "postcss-loader": "^7.0.2",
     "style-loader": "^0.18.2",
     "url-loader": "^4.1.1",
-    "webpack": "^3.12.0",
+    "webpack": "^5.75.0",
     "webpack-bundle-analyzer": ">=3.6.0",
-    "webpack-dev-server": "2.11.5"
+    "webpack-dev-server": "4.11.1"
   },
   "dependencies": {
     "art-template": "^4.13.2"
