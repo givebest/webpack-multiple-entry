@@ -2,14 +2,16 @@
 
 基于 webpack 实现的多入口项目脚手架。
 
-主要使用 `extract-text-webpack-plugin` 实现 `js` 、`css` 公共代码提取，`html-webpack-plugin` 实现 `html` 多入口，`less-loader` 实现 `less` 编译，`postcss-loader` 配置 `autoprefixer` 实现自动添加浏览器兼容前缀，删除~~`html-withimg-loader` 实现 `html` 内引入图片版本号添加和模板功能，~~`art-template`实现`html`模板功能，具有 layout 母模板(布局模板)功能更加强大、同时通过修改解析规则界定符支持浏览器端使用 `art-template-web.js`，babel-loader` 实现 `ES6` 转码功能，`imagemin` 实现图片优化压缩， `happypack` 多线程加速构建速度。
+使用 Webpack 5、Babel、MiniCssExtractPlugin、html-webpack-plugin 和 art-template 实现多入口构建。Less / PostCSS 处理样式，Sharp 优化生产图片。
 
 ## 使用
+
+需要 Node.js 22.15 或更新版本。
 
 ### 安装
 
 ```
-npm install
+npm ci
 ```
 
 ### 开发
@@ -17,7 +19,7 @@ npm install
 ```
 npm start
 ```
-> http://localhost:8080/view
+> http://127.0.0.1:9000/view/index.html
 
 
 ### 构建
@@ -117,18 +119,16 @@ document.getElementById('wrapper').innerHTML = html;
 │       └── foot.art            
 ```
 
-## 常见问题
+## 验证
 
-####  MacOS png 图片处理失败
-
-现象：    
+```sh
+npm run build
+npm test
+npm run dev
+npm audit
 ```
-Module build failed: Error: dyld: Library not loaded: /usr/local/opt/libpng/lib/libpng16.16.dylib
-```
 
-解决：     
-`brew install libpng`，详见：https://github.com/tcoopman/image-webpack-loader#libpng-issues
-
+开发服务器默认仅监听本机地址，并保留 Host / Origin 校验。
 
 ## License
 

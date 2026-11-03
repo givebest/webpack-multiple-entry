@@ -1,291 +1,56 @@
 const path = require('path');
-const webpack = require('webpack');
-const ROOT = process.cwd();  // 根目录
-const ENV = process.env.NODE_ENV;
-const IsProduction = (ENV === 'production') ? true : false;
+const { globSync } = require('glob');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const PostcssConfigPath = './config/postcss.config.js';
-const Glob = require('glob');
-const HappyPack = require('happypack');
-const HappyThreadPool = HappyPack.ThreadPool({ size: (IsProduction ? 10 : 4) });
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const staticUrl = '//cdn.com';
-const publicPath = IsProduction ? staticUrl : '/';
-const extraPath = IsProduction ? '/' : '';
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-let runtime = require('art-template/lib/runtime');
-
-// @see http://aui.github.io/art-template/webpack/index.html#Filter
-// 模板变量
-runtime.Date = () => {
-	return global.Date
-}
-
-
-let entryHtml = getEntryHtml('./src/view/**/*.html'),
-	entryJs = getEntry('./src/js/**/*.js'),
-	configPlugins = [
-		// @see https://doc.webpack-china.org/plugins/provide-plugin/
-		// jQuery 设为自动加载，不必 import 或 require
-		/* new webpack.ProvidePlugin({
-			$: 'jquery',
-			jQuery: 'jquery'
-		}), */
-		new webpack.optimize.ModuleConcatenationPlugin(),
-		new HappyPack({
-			id: 'js',
-			// @see https://github.com/amireh/happypack
-			threadPool: HappyThreadPool,
-			loaders: ['babel-loader']
-		}),
-		new HappyPack({
-			id: 'styles',
-			threadPool: HappyThreadPool,
-			loaders: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader']
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: 'common',
-			minChunks: 3 // 包含 3 次即打包到 commons chunk @see https://doc.webpack-china.org/plugins/commons-chunk-plugin/
-		}),
-		// @see https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points-commons-chunk-css-bundle
-		new ExtractTextPlugin({
-			filename: 'css/[name].css?[contenthash:8]',
-			allChunks: true
-		}),
-		// 手动 copy 一些文件
-		// @see https://github.com/kevlened/copy-webpack-plugin
-		new CopyWebpackPlugin([
-			{
-				from:  'src/js/lib/queries.min.js',
-				to: 'js/lib/queries.min.js'
-			},
-			{
-				from: 'src/js/lib/zepto.min.js',
-				to: 'js/lib/zepto.min.js'
-			}
-		]),
-	];
-
-// html
-entryHtml.forEach(function (v) {
-	configPlugins.push(new HtmlWebpackPlugin(v));
-});
-
-// 开发环境不压缩 js
-if (IsProduction) {
-	configPlugins.push(new webpack.optimize.UglifyJsPlugin({
-		compress: {
-			warnings: false,
-			drop_console: true,
-			pure_funcs: ['console.log']
-		}
-	}));
-} else {
-	// @see https://github.com/th0r/webpack-bundle-analyzer
-	configPlugins.push(new BundleAnalyzerPlugin({
-		openAnalyzer: false
-	}));
-}
-
-// 开发环境不压缩图片，提升热更新效率
-let imageMin = [{
-  loader: 'url-loader',
-  options: {
-    limit: 100,
-    publicPath: publicPath + extraPath,
-    outputPath: function (path) {
-      return path.replace('src/img', 'img');
-    },
-    name: '[path][name].[ext]?[hash:8]'
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+const production = process.env.NODE_ENV === 'production';
+const root = path.resolve(__dirname, '..');
+const entry = {};
+for (const file of globSync('src/js/**/*.js', { cwd: root })) {
+  if (!/^src\/js\/(lib|commons)\//.test(file)) {
+    entry[file.slice('src/js/'.length, -3)] = path.resolve(root, file);
   }
-}]
-if (IsProduction) {
-  imageMin.push({
-    // @see https://github.com/tcoopman/image-webpack-loader
-    loader: 'image-webpack-loader',
-    query: {
-      mozjpeg: {
-        quality: 65
-      },
-      pngquant: {
-        quality: '65-90',
-        speed: 4
-      }
-    }
-  })
 }
-
-// 配置
-const config = {
-	entry: entryJs,
-	// @see https://github.com/webpack-contrib/extract-text-webpack-plugin/blob/master/example/webpack.config.js
-	output: {
-		filename: 'js/[name].js?[chunkhash:8]',
-		chunkFilename: 'js/[name].js?[chunkhash:8]',
-		path: path.resolve(ROOT, 'dist'),
-		publicPath: publicPath
-	},
-	module: {
-		// @see https://doc.webpack-china.org/configuration/module/#module-noparse
-		// 排除不需要 webpack 解析的文件，提高速度
-		/* noParse: function (content) {
-			return /jquery|zepto/.test(content);
-		}, */
-		noParse: /jquery|lodash|zepto/,
-		rules: [
-			{
-				test: /\.js$/i,
-				exclude: /(node_modules|bower_components)/,
-				use: {
-					loader: 'babel-loader?id=js',
-					options: {
-						presets: ['env']
-					}
-				}
-			},
-			{
-				test: /\.(less|css)$/i,
-				use: ExtractTextPlugin.extract({
-					fallback: 'style-loader?id=styles',
-					use: [{
-							loader: 'css-loader?id=styles',
-							options: {
-								minimize:  IsProduction
-							}
-						},
-						{
-							loader: 'less-loader?id=styles'
-						},
-						{
-							loader: 'postcss-loader?id=styles',
-							options: {
-								config: {
-									path: PostcssConfigPath
-								}
-							}
-						}
-					]
-				})
-			},
-			{
-				test: /\.(png|jpe?g|gif|svg)$/i,
-				use: imageMin
-			},
-			{
-				test: /\.(eot|svg|ttf|woff)$/i,
-				use: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 100,
-							publicPath: publicPath + extraPath,
-							name: 'font/[name].[ext]?[hash:8]'
-						}
-					}
-				]
-			},
-      // @see http://aui.github.io/art-template/webpack/index.html#Options
-      {
-        test: /\.(htm|html|art)$/i,
-        loader: 'art-template-loader',
-        options: {
-        	imports: require.resolve('art-template/lib/runtime')
-        }
-      },
-			// @see https://github.com/wzsxyz/html-withimg-loader
-			/*{
-				test: /\.(htm|html)$/i,
-				loader: 'html-withimg-loader?min=false'
-			}*/
-		]
-	},
-	resolve: {
-		alias: {
-			views:  path.resolve(ROOT, './src/view'),
-		}
-	},
-	plugins: configPlugins,
-	/**
-	 * @see https://doc.webpack-china.org/configuration/externals/
-	 * CDN 引入 jQuery，jQuery 不打包到 bundle 中
-	 */
-	externals: {
-		jquery: 'jQuery'
-	},
-	// @see http://webpack.github.io/docs/webpack-dev-server.html
-	// @see http://www.css88.com/doc/webpack2/configuration/dev-server/
-	devServer: {
-		contentBase: [
-			path.join(ROOT, 'src/')
-		],
-		disableHostCheck: true,  // https://stackoverflow.com/questions/43650550/invalid-host-header-in-when-running-react-app
-		hot: false,
-		host: '0.0.0.0',
-		port: 9000,
-		/**
-	     * http://localhost:8080/api/get => http://httpbin.org/get
-	     */
-	    proxy: {
-	      '/api': {
-	        target: 'http://httpbin.org',
-	        changeOrigin: true,
-	        pathRewrite: {
-	          '^/api': ''
-	        }
-	      }
-	    }
-	}
+const pages = globSync('src/view/**/*.html', { cwd: root }).map(file => {
+  const name = file.slice('src/view/'.length, -5);
+  return new HtmlWebpackPlugin({
+    filename: file.slice('src/'.length),
+    template: path.resolve(root, file),
+    chunks: ['common', name],
+    minify: production ? { removeComments: true, minifyCSS: true, minifyJS: true } : false
+  });
+});
+module.exports = {
+  mode: production ? 'production' : 'development',
+  entry,
+  output: {
+    path: path.resolve(root, 'dist'),
+    filename: 'js/[name].[contenthash:8].js',
+    chunkFilename: 'js/[name].[contenthash:8].js',
+    publicPath: production ? '//cdn.com/' : '/',
+    clean: true
+  },
+  module: { rules: [
+    { test: /\.js$/i, exclude: /node_modules/, use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } } },
+    { test: /\.(less|css)$/i, use: [MiniCssExtractPlugin.loader, 'css-loader', { loader: 'postcss-loader', options: { postcssOptions: require('./postcss.config') } }, 'less-loader'] },
+    { test: /\.(png|jpe?g|gif|svg|eot|ttf|woff2?)$/i, type: 'asset', parser: { dataUrlCondition: { maxSize: 100 } }, generator: { filename: '[path][name].[contenthash:8][ext]' } },
+    { test: /\.(htm|html|art)$/i, loader: 'art-template-loader', options: { minimize: false, imports: require.resolve('./template-runtime') } }
+  ] },
+  resolve: { alias: { views: path.resolve(root, 'src/view') } },
+  externals: { jquery: 'jQuery' },
+  optimization: {
+    splitChunks: { cacheGroups: { common: { name: 'common', chunks: 'all', minChunks: 3, enforce: true } } },
+    minimizer: ['...', new ImageMinimizerPlugin({ minimizer: { implementation: ImageMinimizerPlugin.sharpMinify, options: { encodeOptions: { jpeg: { quality: 65 }, png: { quality: 90 } } } } })]
+  },
+  plugins: [
+    new MiniCssExtractPlugin({ filename: 'css/[name].[contenthash:8].css' }),
+    new CopyWebpackPlugin({ patterns: [...['queries.min.js', 'zepto.min.js'].map(name => ({ from: path.resolve(root, 'src/js/lib', name), to: 'js/lib/' + name })), { from: path.resolve(root, 'src/css/*.css'), to: 'css/[name][ext]' }, { from: path.resolve(root, 'src/font'), to: 'font' }] }),
+    ...pages
+  ],
+  devServer: {
+    static: { directory: path.resolve(root, 'src') },
+    host: '127.0.0.1', port: 9000, hot: false,
+    proxy: [{ context: ['/api'], target: 'http://httpbin.org', changeOrigin: true, pathRewrite: { '^/api': '' } }]
+  }
 };
-
-/**
- * 根据目录获取入口
- * @param  {[type]} globPath [description]
- * @return {[type]}          [description]
- */
-function getEntry (globPath) {
-	let entries = {};
-	Glob.sync(globPath).forEach(function (entry) {
-		let basename = path.basename(entry, path.extname(entry)),
-			pathname = path.dirname(entry),
-      fileDir = pathname.split('/').splice(3).join('/');
-
-		// js/lib/*.js 不作为入口
-		if (!entry.match(/\/js\/(lib|commons)\//)) {
-			entries[(fileDir ? fileDir + '/' : fileDir) + basename] = pathname + '/' + basename;
-		}
-	});
-	return entries;
-}
-
-/**
- * 根据目录获取 Html 入口
- * @param  {[type]} globPath [description]
- * @return {[type]}          [description]
- */
-function getEntryHtml (globPath) {
-	let entries = [];
-	Glob.sync(globPath).forEach(function (entry) {
-		let basename = path.basename(entry, path.extname(entry)),
-			pathname = path.dirname(entry),
-      fileDir = pathname.split('/').splice(3).join('/'),
-			// @see https://github.com/kangax/html-minifier#options-quick-reference
-			minifyConfig = !IsProduction ? '' : {
-				removeComments: true,
-				// collapseWhitespace: true,
-				minifyCSS: true,
-				minifyJS: true
-			};
-
-		entries.push({
-			filename: entry.split('/').splice(2).join('/'),
-			template: entry,
-			chunks: ['common', (fileDir ? fileDir + '/' : fileDir) + basename],
-			minify: minifyConfig
-		});
-
-	});
-	return entries;
-}
-
-module.exports = config;

@@ -4,21 +4,10 @@
   "description": "webpack multiple entry",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "better-npm-run build",
-    "dev": "better-npm-run dev",
-    "start": "better-npm-run start"
-  },
-  "betterScripts": {
-    "dev": {
-      "command": "cross-env NODE_ENV=dev webpack --config config/webpack.config"
-    },
-    "build": {
-      "command": "cross-env NODE_ENV=production webpack --config config/webpack.config"
-    },
-    "start": {
-      "command": "webpack-dev-server --config config/webpack.config"
-    }
+    "test": "node --test",
+    "build": "cross-env NODE_ENV=production webpack --config config/webpack.config.js",
+    "dev": "webpack --config config/webpack.config.js",
+    "start": "webpack serve --config config/webpack.config.js"
   },
   "author": "givebest",
   "license": "ISC",
@@ -27,32 +16,36 @@
   },
   "homepage": "https://github.com/givebest/webpack-multiple-entry#readme",
   "devDependencies": {
-    "art-template-loader": "^1.4.3",
-    "autoprefixer": "^10.4.13",
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.0.0",
-    "babel-preset-env": "^1.5.2",
-    "better-npm-run": "^0.0.15",
-    "copy-webpack-plugin": "^4.0.1",
-    "cross-env": "^5.0.1",
-    "css-loader": "^6.7.3",
-    "extract-text-webpack-plugin": "^3.0.0",
-    "file-loader": "^0.11.2",
-    "glob": "^7.1.2",
-    "happypack": "^4.0.1",
-    "html-webpack-plugin": "^2.30.1",
-    "image-webpack-loader": "^8.1.0",
-    "jquery": ">=3.4.0",
-    "less": "^4.1.3",
-    "less-loader": "^4.0.4",
-    "postcss-loader": "^7.0.2",
-    "style-loader": "^0.18.2",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.76.0",
-    "webpack-bundle-analyzer": ">=4.10.2",
-    "webpack-dev-server": "4.11.1"
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "babel-loader": "^10.1.1",
+    "autoprefixer": "^10.6.2",
+    "copy-webpack-plugin": "^14.0.0",
+    "cross-env": "^10.1.0",
+    "css-loader": "^7.1.5",
+    "glob": "^14.0.3",
+    "html-webpack-plugin": "^5.6.8",
+    "less": "^4.9.1",
+    "less-loader": "^13.1.0",
+    "mini-css-extract-plugin": "^2.10.2",
+    "postcss": "^8.5.32",
+    "postcss-loader": "^8.2.1",
+    "webpack": "^5.112.2",
+    "webpack-cli": "^7.3.1",
+    "webpack-dev-server": "^6.1.0",
+    "image-minimizer-webpack-plugin": "^5.0.0",
+    "sharp": "^0.35.5",
+    "art-template-loader": "^1.4.3"
   },
   "dependencies": {
     "art-template": "^4.13.2"
-  }
+  },
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 5 versions",
+    "not ie <= 9"
+  ]
 }
